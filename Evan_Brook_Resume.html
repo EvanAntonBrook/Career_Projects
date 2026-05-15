@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Evan Brook Resume</title>
+<style>
+    @page { size: letter; margin: 0.4in; }
+    body { font-family: "Garamond", "Times New Roman", serif; font-size: 11pt; line-height: 1.1; color: #000; margin: 0; padding: 0; }
+    .header { text-align: center; margin-bottom: 10px; }
+    .name { font-size: 18pt; font-weight: bold; margin-bottom: 2px; text-transform: uppercase; }
+    .contact-info { font-size: 10pt; }
+    .contact-info a { color: #000; text-decoration: none; }
+    
+    .section-title { font-size: 11pt; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000; margin-top: 12px; margin-bottom: 4px; padding-bottom: 2px; }
+    
+    .entry { margin-bottom: 6px; }
+    .entry-header { display: flex; justify-content: space-between; font-weight: bold; }
+    .entry-sub { display: flex; justify-content: space-between; font-style: italic; margin-bottom: 2px; }
+    
+    ul { margin: 0; padding-left: 18px; }
+    li { margin-bottom: 2px; }
+    
+    .link-highlight { font-family: monospace; font-size: 10pt; color: #0056b3; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <div class="name">Evan Brook</div>
+    <div class="contact-info">
+        Seattle, WA | (425) 686-4170 | evanbrook2023@gmail.com | github.com/EvanAntonBrook
+    </div>
+</div>
+
+<div class="section-title">Education</div>
+<div class="entry">
+    <div class="entry-header">
+        <span>Saint Mary's College of California</span>
+        <span>Moraga, CA</span>
+    </div>
+    <div class="entry-sub">
+        <span>Bachelor of Science in Finance; Bachelor of Science in Business Analytics</span>
+        <span>Expected May 2027</span>
+    </div>
+    <ul>
+        <li><strong>GPA:</strong> 3.4 / 4.0</li>
+        <li><strong>Relevant Coursework:</strong> Financial Accounting, Managerial Accounting, Statistics, Data Visualization, Relational Databases, Macroeconomics.</li>
+    </ul>
+</div>
+
+<div class="section-title">Professional Experience</div>
+<div class="entry">
+    <div class="entry-header">
+        <span>Northwestern Mutual</span>
+        <span>Walnut Creek, CA</span>
+    </div>
+    <div class="entry-sub">
+        <span>Financial Planning Intern</span>
+        <span>May 2025 – Present</span>
+    </div>
+    <ul>
+        <li><strong>Top 70 Producer:</strong> Ranked in the Top 70 out of 3,500+ interns nationwide based on production volume and client acquisition; exclusively selected for the Elite CFR Academy in Milwaukee.</li>
+        <li><strong>Deal Sourcing & Client Management:</strong> Launched and managed an independent financial planning practice, overseeing end-to-end client acquisition, cold outreach, and daily consultations.</li>
+        <li><strong>Asset Allocation:</strong> Developed comprehensive financial plans for investing and risk management, structuring portfolio asset allocations to meet client wealth generation goals.</li>
+        <li><strong>Operations:</strong> Led the onboarding process for new clients, ensuring seamless integration of financial planning software and strict regulatory compliance documentation.</li>
+    </ul>
+</div>
+
+<div class="entry">
+    <div class="entry-header">
+        <span>Jersey Mike’s</span>
+        <span>Walnut Creek, CA</span>
+    </div>
+    <div class="entry-sub">
+        <span>Shift Lead</span>
+        <span>February 2024 – Present</span>
+    </div>
+    <ul>
+        <li>Promoted to Shift Lead to manage operations, train incoming staff, and optimize store workflow in a high-volume environment.</li>
+        <li>Demonstrated rigorous time management by balancing a quantitative double-major course load with consistent 20+ hour work weeks.</li>
+    </ul>
+</div>
+
+<div class="section-title">Quantitative Projects & Architecture</div>
+
+<div class="entry">
+    <div class="entry-header">
+        <span>Quantitative M&A Sourcing Engine (Python) | <a href="https://evanbrook-ma.streamlit.app" class="link-highlight">evanbrook-ma.streamlit.app</a></span>
+        <span>Private Equity</span>
+    </div>
+    <ul>
+        <li>Engineered a fully automated deal-sourcing pipeline that algorithmically identifies undervalued mid-cap acquisition targets using a Random Forest Machine Learning classifier.</li>
+        <li>Programmed Leveraged Buyout (LBO) and Discounted Cash Flow (DCF) models into Python to mathematically calculate Intrinsic Value and 5-year Free Cash Flow (FCF) Yield.</li>
+        <li>Integrated a 10,000-scenario Monte Carlo Simulation to stress-test exit multiples and calculate probabilities of capital loss.</li>
+        <li>Deployed a Natural Language Processing (NLP) web scraper to parse live SEC filings and market news for qualitative risk factors.</li>
+    </ul>
+</div>
+
+<div class="entry">
+    <div class="entry-header">
+        <span>Venture Capital Unit Economics Model (Python) | <a href="https://evanbrook-vc.streamlit.app" class="link-highlight">evanbrook-vc.streamlit.app</a></span>
+        <span>Venture Capital</span>
+    </div>
+    <ul>
+        <li>Architected an Unsupervised Machine Learning pipeline deploying <code>scikit-learn</code> K-Means clustering to autonomously evaluate and tranche the unit economics of early-stage SaaS startups.</li>
+        <li>Mathematically evaluated the Rule of 40 and LTV:CAC ratios to identify high-conviction targets while flagging capital-intensive outliers.</li>
+        <li>Built a Series A Capital Raise algorithm to calculate the exact equity injection required to secure 24 months of operational runway.</li>
+    </ul>
+</div>
+
+<div class="entry">
+    <div class="entry-header">
+        <span>Sovereign Wealth Portfolio Optimizer (Python) | <a href="https://evanbrook-wealth.streamlit.app" class="link-highlight">evanbrook-wealth.streamlit.app</a></span>
+        <span>Family Office</span>
+    </div>
+    <ul>
+        <li>Developed an algorithmic asset allocation engine to manage nine-figure trust funds utilizing Modern Portfolio Theory (MPT).</li>
+        <li>Connected to financial APIs to generate 5-year historical covariance matrices, executing 10,000 algorithmic simulations to map the Markowitz Efficient Frontier and maximize the portfolio Sharpe Ratio.</li>
+        <li>Implemented a Black Swan Stress Test module to subject the optimized portfolio to the 2008 Financial Crisis and 2020 COVID crashes, quantifying Maximum Drawdown for institutional risk management.</li>
+    </ul>
+</div>
+
+<div class="section-title">Technical Skills</div>
+<div class="entry">
+    <ul>
+        <li><strong>Programming & Data:</strong> Python (Pandas, NumPy, scikit-learn), R, SQL (Star/Snowflake Schemas), Advanced Excel.</li>
+        <li><strong>Finance & Strategy:</strong> Modern Portfolio Theory (MPT), DCF Valuation, LBO Modeling, Risk Management, Deal Sourcing.</li>
+        <li><strong>Interests:</strong> Golf, Weightlifting, Basketball, Hiking.</li>
+    </ul>
+</div>
+
+</body>
+</html>

@@ -63,6 +63,55 @@ else:
     
     st.dataframe(display_df, use_container_width=True)
 
+    # --- LIVE STARTUP INTAKE MODULE ---
+    st.markdown("---")
+    st.subheader("Live Startup Intake (Custom Unit Economics)")
+    st.markdown("Input live metrics from an active pitch deck. The engine will instantly calculate the Rule of 40, LTV:CAC, and automatically classify the asset into a risk tranche.")
+    
+    with st.expander("➕ Open Live Startup Intake Form"):
+        col_in1, col_in2, col_in3 = st.columns(3)
+        custom_name = col_in1.text_input("Startup Name", "Acme SaaS")
+        custom_arr = col_in1.number_input("ARR ($M)", 1.0, 100.0, 5.0, 0.5) * 1e6
+        
+        custom_growth = col_in2.number_input("YoY Growth (%)", -50.0, 200.0, 30.0, 5.0)
+        custom_ebitda = col_in2.number_input("EBITDA Margin (%)", -100.0, 50.0, -10.0, 5.0)
+        
+        custom_ltv = col_in3.number_input("Customer LTV ($)", 100, 100000, 5000, 500)
+        custom_cac = col_in3.number_input("Customer CAC ($)", 100, 50000, 1500, 100)
+        
+        col_in4, col_in5 = st.columns(2)
+        custom_cash = col_in4.number_input("Cash in Bank ($M)", 0.0, 50.0, 2.0, 0.5) * 1e6
+        custom_burn = col_in5.number_input("Monthly Burn ($K)", 0.0, 1000.0, 150.0, 10.0) * 1000
+        
+        if st.button("Evaluate Pitch Deck"):
+            rule_of_40 = custom_growth + custom_ebitda
+            ltv_cac = custom_ltv / custom_cac if custom_cac > 0 else 0
+            runway = custom_cash / custom_burn if custom_burn > 0 else 999
+            
+            if rule_of_40 >= 40 and ltv_cac >= 3.0:
+                calc_tier = "Tier 1: High Conviction"
+                t_color = "#00CC96"
+            elif rule_of_40 < 20 and runway < 12:
+                calc_tier = "Tier 3: Growth Stagnation"
+                t_color = "#AB63FA"
+            else:
+                calc_tier = "Tier 2: Capital Intensive"
+                t_color = "#EF553B"
+                
+            st.markdown(f"### AI Classification: <span style='color:{t_color}'>{calc_tier}</span>", unsafe_allow_html=True)
+            
+            out1, out2, out3 = st.columns(3)
+            out1.metric("Rule of 40 Score", f"{rule_of_40:.1f}%", delta="Pass (>40%)" if rule_of_40 >= 40 else "Fail (<40%)", delta_color="normal" if rule_of_40 >= 40 else "inverse")
+            out2.metric("LTV:CAC Ratio", f"{ltv_cac:.2f}x", delta="Pass (>3.0x)" if ltv_cac >= 3.0 else "Fail (<3.0x)", delta_color="normal" if ltv_cac >= 3.0 else "inverse")
+            out3.metric("Cash Runway", f"{runway:.1f} months", delta="Critical (<12m)" if runway < 12 else "Stable", delta_color="inverse" if runway < 12 else "normal")
+            
+            if calc_tier == "Tier 1: High Conviction":
+                st.success("✅ **Recommendation:** Asset demonstrates elite capital efficiency. Proceed to due diligence and term sheet modeling.")
+            elif calc_tier == "Tier 2: Capital Intensive":
+                st.warning("⚠️ **Recommendation:** Asset requires significant equity injection to maintain growth. Evaluate cash burn strictly.")
+            else:
+                st.error("❌ **Recommendation:** PASS. Hyper-burn with stagnant growth metrics.")
+
     # --- SERIES A CAPITAL RAISE CALCULATOR ---
     st.markdown("---")
     st.subheader("Series A Capital Raise Calculator")

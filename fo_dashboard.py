@@ -116,6 +116,70 @@ else:
         else:
             st.warning("⚠️ **Risk Assessment:** Portfolio exhibits high beta exposure to equities. Consider increasing Treasury (TLT) or Gold (GLD) allocations to hedge tail-risk.")
             
+    # --- LIVE CUSTOM PORTFOLIO BUILDER ---
+    st.markdown("---")
+    st.subheader("Live Custom Portfolio Builder (Markowitz MPT)")
+    st.markdown("Enter custom tickers to dynamically download 5-year historical prices from Yahoo Finance and run a live Markowitz optimization.")
+    
+    with st.expander("⚙️ Open Live API Optimizer"):
+        custom_tickers_input = st.text_input("Enter Tickers (comma-separated):", "AAPL, MSFT, GOOG, NVDA, AMZN").upper()
+        
+        if st.button("Run Live Optimization"):
+            with st.spinner("Downloading historical prices and running 2,000 Monte Carlo simulations..."):
+                import yfinance as yf
+                import numpy as np
+                
+                custom_tickers = [t.strip() for t in custom_tickers_input.split(',')]
+                
+                try:
+                    # Download data
+                    data = yf.download(custom_tickers, period="5y")['Close']
+                    if data.empty:
+                        st.error("No data found for these tickers.")
+                    else:
+                        # Calculate returns
+                        returns = data.pct_change().dropna()
+                        mean_returns = returns.mean() * 252
+                        cov_matrix = returns.cov() * 252
+                        
+                        num_portfolios = 2000
+                        results = np.zeros((3, num_portfolios))
+                        weights_record = []
+                        
+                        for i in range(num_portfolios):
+                            weights = np.random.random(len(custom_tickers))
+                            weights /= np.sum(weights)
+                            
+                            portfolio_return = np.sum(mean_returns * weights)
+                            portfolio_std_dev = np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
+                            
+                            results[0,i] = portfolio_return
+                            results[1,i] = portfolio_std_dev
+                            results[2,i] = (portfolio_return - 0.04) / portfolio_std_dev # Sharpe (4% risk-free)
+                            weights_record.append(weights)
+                            
+                        max_sharpe_idx = np.argmax(results[2])
+                        optimal_weights = weights_record[max_sharpe_idx]
+                        
+                        st.success("API Optimization Complete.")
+                        
+                        op_c1, op_c2, op_c3 = st.columns(3)
+                        op_c1.metric("Expected Annual Return", f"{results[0, max_sharpe_idx]*100:.2f}%")
+                        op_c2.metric("Annualized Volatility", f"{results[1, max_sharpe_idx]*100:.2f}%")
+                        op_c3.metric("Max Sharpe Ratio", f"{results[2, max_sharpe_idx]:.2f}")
+                        
+                        # Plot Custom Pie
+                        custom_pie_df = pd.DataFrame({
+                            'Asset': custom_tickers,
+                            'Allocation': optimal_weights
+                        })
+                        
+                        fig_cp = px.pie(custom_pie_df, values='Allocation', names='Asset', hole=0.4, title="Optimal Capital Allocation", template="plotly_dark", color_discrete_sequence=px.colors.qualitative.Prism)
+                        st.plotly_chart(fig_cp, use_container_width=True)
+                        
+                except Exception as e:
+                    st.error(f"Error running optimization: Please ensure tickers are valid on Yahoo Finance.")
+
     # --- AI CLIENT ALLOCATION MEMO ---
     st.markdown("---")
     st.subheader("Autonomous Client Allocation Memo")

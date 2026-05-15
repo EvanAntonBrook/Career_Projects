@@ -97,7 +97,72 @@ else:
         mc_col1, mc_col2 = st.columns(2)
         mc_col1.metric("Median Projected IRR", f"{median_irr:.1f}%")
         mc_col2.metric("Probability of Capital Loss", f"{prob_loss:.1f}%", delta_color="inverse")
-
+    # --- LIVE API DCF VALUATION MODULE ---
+    st.markdown("---")
+    st.subheader("Live Custom API Valuation (DCF)")
+    st.markdown("Enter any global equity ticker. The engine will ping the Yahoo Finance API to pull live financials and run a 5-Year Discounted Cash Flow (DCF) model.")
+    
+    live_ticker = st.text_input("Enter Ticker Symbol (e.g., AAPL, MSFT, TSLA):", "").upper()
+    
+    if live_ticker:
+        with st.spinner(f"Connecting to Yahoo Finance API for {live_ticker}..."):
+            import yfinance as yf
+            import time
+            ticker_obj = yf.Ticker(live_ticker)
+            try:
+                info = ticker_obj.info
+                cf = ticker_obj.cashflow
+                
+                if cf is not None and not cf.empty:
+                    # Get latest Free Cash Flow
+                    if 'Free Cash Flow' in cf.index:
+                        fcf_ttm = cf.loc['Free Cash Flow'].iloc[0]
+                    elif 'Operating Cash Flow' in cf.index and 'Capital Expenditure' in cf.index:
+                        fcf_ttm = cf.loc['Operating Cash Flow'].iloc[0] + cf.loc['Capital Expenditure'].iloc[0] # CapEx is usually negative
+                    else:
+                        fcf_ttm = None
+                        
+                    if fcf_ttm and fcf_ttm > 0:
+                        shares = info.get('sharesOutstanding', 1)
+                        current_price = info.get('currentPrice', 1)
+                        
+                        if shares and current_price:
+                            # DCF Assumptions
+                            wacc = 0.09 # 9% WACC
+                            growth_rate = 0.05 # 5% growth
+                            terminal_growth = 0.02 # 2% terminal
+                            
+                            # Project 5 years
+                            projected_fcf = [fcf_ttm * ((1 + growth_rate) ** i) for i in range(1, 6)]
+                            discounted_fcf = [fcf / ((1 + wacc) ** i) for i, fcf in enumerate(projected_fcf, 1)]
+                            
+                            # Terminal Value
+                            terminal_value = (projected_fcf[-1] * (1 + terminal_growth)) / (wacc - terminal_growth)
+                            discounted_tv = terminal_value / ((1 + wacc) ** 5)
+                            
+                            intrinsic_equity_value = sum(discounted_fcf) + discounted_tv
+                            intrinsic_share_price = intrinsic_equity_value / shares
+                            
+                            margin_of_safety = ((intrinsic_share_price - current_price) / current_price) * 100
+                            
+                            st.success(f"Successfully pulled live financials for **{info.get('shortName', live_ticker)}**.")
+                            
+                            dcf_c1, dcf_c2, dcf_c3 = st.columns(3)
+                            dcf_c1.metric("Current Market Price", f"${current_price:.2f}")
+                            dcf_c2.metric("Calculated Intrinsic Value", f"${intrinsic_share_price:.2f}")
+                            
+                            if margin_of_safety > 0:
+                                dcf_c3.metric("Margin of Safety (Discount)", f"{margin_of_safety:.1f}%", delta="Undervalued")
+                            else:
+                                dcf_c3.metric("Margin of Safety (Premium)", f"{margin_of_safety:.1f}%", delta="Overvalued", delta_color="inverse")
+                        else:
+                            st.error("Missing share count or price data from API.")
+                    else:
+                        st.error(f"Cannot run DCF: {live_ticker} has negative or missing Free Cash Flow.")
+                else:
+                    st.error(f"Could not retrieve cashflow data for {live_ticker} from API.")
+            except Exception as e:
+                st.error(f"API Error fetching {live_ticker}. Please ensure it is a valid Yahoo Finance ticker.")
     # --- NLP SEC & NEWS SENTIMENT ANALYSIS ---
     st.markdown("---")
     st.subheader("Natural Language Processing (NLP) Risk Scanner")
