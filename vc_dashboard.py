@@ -93,7 +93,7 @@ else:
             st.success(f"**Investment Thesis:** {selected_startup} is already capitalized for over 24 months. No immediate equity dilution is required, signaling strong operational leverage.")
             
         st.markdown("---")
-    st.write("#### 12-Month Capital Depletion Curve")
+        st.write("#### 12-Month Capital Depletion Curve")
         
         # Simulate 12 month cash burn trajectory
         months = [f"M{i}" for i in range(1, 13)]
