@@ -116,6 +116,57 @@ else:
         else:
             st.warning("⚠️ **Risk Assessment:** Portfolio exhibits high beta exposure to equities. Consider increasing Treasury (TLT) or Gold (GLD) allocations to hedge tail-risk.")
             
+    # --- MULTI-GENERATIONAL WEALTH TRANSFER SIMULATOR ---
+    st.markdown("---")
+    st.subheader("Multi-Generational Trust Depletion Simulator")
+    st.markdown("Simulate the survival of the trust fund across 3 generations (100 years) factoring in inflation, annual beneficiary withdrawals, and optimized market returns.")
+    
+    with st.expander("🏛️ Open Estate Planning Simulator"):
+        gen_c1, gen_c2, gen_c3 = st.columns(3)
+        withdrawal_rate = gen_c1.slider("Annual Beneficiary Withdrawal (%)", 1.0, 10.0, 4.0, 0.5) / 100
+        inflation_rate = gen_c2.slider("Projected Average Inflation (%)", 1.0, 8.0, 3.0, 0.5) / 100
+        trust_tax = gen_c3.slider("Annual Trust Tax Rate (%)", 0.0, 40.0, 15.0, 1.0) / 100
+        
+        if st.button("Simulate 100-Year Trust Survival"):
+            years = list(range(1, 101))
+            trust_value = [portfolio_value]
+            gross_return = optimal_portfolio['Return']
+            
+            # Net real return = Gross Return - Taxes - Inflation
+            net_real_return = gross_return * (1 - trust_tax) - inflation_rate
+            
+            for y in range(1, 100):
+                start_year_val = trust_value[-1]
+                growth = start_year_val * net_real_return
+                withdrawal = start_year_val * withdrawal_rate
+                end_val = start_year_val + growth - withdrawal
+                trust_value.append(max(0, end_val))
+                
+            sim_df = pd.DataFrame({
+                'Year': years,
+                'Trust Value ($)': trust_value
+            })
+            
+            fig_trust = px.line(
+                sim_df, x='Year', y='Trust Value ($)', 
+                title="100-Year Multi-Generational Wealth Projection",
+                template="plotly_dark",
+                color_discrete_sequence=['#FFD700']
+            )
+            fig_trust.add_vrect(x0=0, x1=33, fillcolor="green", opacity=0.1, layer="below", line_width=0, annotation_text="Gen 1", annotation_position="top left")
+            fig_trust.add_vrect(x0=33, x1=66, fillcolor="blue", opacity=0.1, layer="below", line_width=0, annotation_text="Gen 2", annotation_position="top left")
+            fig_trust.add_vrect(x0=66, x1=100, fillcolor="red", opacity=0.1, layer="below", line_width=0, annotation_text="Gen 3", annotation_position="top left")
+            
+            st.plotly_chart(fig_trust, use_container_width=True)
+            
+            final_val = trust_value[-1]
+            if final_val > portfolio_value:
+                st.success(f"✅ **Endowment Preserved:** The trust outpaces inflation and distributions, leaving **${final_val/1e6:.1f}M** for Generation 4.")
+            elif final_val > 0:
+                st.warning(f"⚠️ **Capital Depletion:** The trust survives 3 generations but depletes principal, leaving **${final_val/1e6:.1f}M**.")
+            else:
+                st.error("❌ **Ruin Probability 100%:** The trust goes completely bankrupt before reaching Generation 3.")
+
     # --- LIVE CUSTOM PORTFOLIO BUILDER ---
     st.markdown("---")
     st.subheader("Live Custom Portfolio Builder (Markowitz MPT)")

@@ -170,6 +170,35 @@ else:
         )
         st.plotly_chart(fig_burn, use_container_width=True)
         
+        # --- CAP TABLE & DILUTION MODELING ---
+        st.markdown("---")
+        st.write("#### Post-Money Valuation & Founder Dilution Tracker")
+        
+        with st.expander("📊 Open Cap Table Modeler"):
+            cap_c1, cap_c2 = st.columns(2)
+            pre_money = cap_c1.number_input("Pre-Money Valuation ($M)", 5.0, 500.0, 20.0, 1.0) * 1e6
+            founder_equity_pre = cap_c2.slider("Founder Equity Before Raise (%)", 10.0, 100.0, 80.0, 1.0) / 100
+            
+            if required_capital > 0:
+                post_money = pre_money + required_capital
+                investor_equity = required_capital / post_money
+                founder_equity_post = founder_equity_pre * (1 - investor_equity)
+                
+                cap_out1, cap_out2, cap_out3 = st.columns(3)
+                cap_out1.metric("Post-Money Valuation", f"${post_money/1e6:.1f}M")
+                cap_out2.metric("New Investor Ownership", f"{investor_equity*100:.1f}%")
+                cap_out3.metric("Founder Ownership (Post-Dilution)", f"{founder_equity_post*100:.1f}%", f"{(founder_equity_post - founder_equity_pre)*100:.1f}% Dilution", delta_color="inverse")
+                
+                # Pie chart of new Cap Table
+                cap_df = pd.DataFrame({
+                    'Shareholder': ['Founders', 'New Lead Investor', 'Other/Option Pool'],
+                    'Ownership': [founder_equity_post, investor_equity, 1.0 - (founder_equity_post + investor_equity)]
+                })
+                fig_cap = px.pie(cap_df, values='Ownership', names='Shareholder', hole=0.5, title="Post-Series A Cap Table", template="plotly_dark", color_discrete_sequence=['#00CC96', '#EF553B', '#636EFA'])
+                st.plotly_chart(fig_cap, use_container_width=True)
+            else:
+                st.info("No Series A capital raise required; Cap Table remains undiluted.")
+                
         # --- AI PARTNER PITCH MEMO ---
         st.markdown("---")
         st.subheader("Autonomous Partner Pitch Memo")
