@@ -231,6 +231,40 @@ else:
                 except Exception as e:
                     st.error(f"Error running optimization: Please ensure tickers are valid on Yahoo Finance.")
 
+    # --- BLACK-SCHOLES OPTIONS PRICING (TAIL-RISK HEDGING) ---
+    st.markdown("---")
+    st.subheader("Black-Scholes Options Pricing (Tail-Risk Hedging)")
+    st.markdown("Algorithmically price Protective Put options to hedge the equity portfolio against severe market drawdowns using the Black-Scholes Mathematical Model.")
+    
+    with st.expander("🛡️ Open Derivatives Hedging Engine"):
+        import math
+        from scipy.stats import norm
+        
+        bs_c1, bs_c2, bs_c3 = st.columns(3)
+        
+        S = bs_c1.number_input("Current Underlying Price (S)", 10.0, 5000.0, 500.0, 10.0)
+        K = bs_c2.number_input("Strike Price (K) - Downside Target", 10.0, 5000.0, 450.0, 10.0)
+        T = bs_c3.slider("Time to Expiration (Years)", 0.1, 5.0, 1.0, 0.1)
+        
+        r = 0.04 # Risk free rate
+        sigma = bs_c1.slider("Implied Volatility (σ)", 0.05, 1.0, 0.20, 0.01)
+        
+        if st.button("Calculate Derivative Premiums"):
+            # Black-Scholes Formula
+            d1 = (math.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * math.sqrt(T))
+            d2 = d1 - sigma * math.sqrt(T)
+            
+            call_price = S * norm.cdf(d1) - K * math.exp(-r * T) * norm.cdf(d2)
+            put_price = K * math.exp(-r * T) * norm.cdf(-d2) - S * norm.cdf(-d1)
+            
+            st.success("Black-Scholes pricing successfully executed.")
+            
+            p_c1, p_c2 = st.columns(2)
+            p_c1.metric("Protective Put Premium (Hedge)", f"${put_price:.2f}", "-Downside Protection", delta_color="normal")
+            p_c2.metric("Call Option Premium (Leverage)", f"${call_price:.2f}", "+Upside Exposure", delta_color="normal")
+            
+            st.write(f"**Hedging Thesis:** To protect the portfolio against a drop below ${K:.2f} within {T} years, the Family Office must pay a premium of **${put_price:.2f}** per share. At an implied volatility of {sigma*100:.1f}%, this represents a cost of {(put_price/S)*100:.1f}% of the underlying asset value to completely neutralize tail-risk.")
+
     # --- AI CLIENT ALLOCATION MEMO ---
     st.markdown("---")
     st.subheader("Autonomous Client Allocation Memo")

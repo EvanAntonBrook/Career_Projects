@@ -163,6 +163,111 @@ else:
                     st.error(f"Could not retrieve cashflow data for {live_ticker} from API.")
             except Exception as e:
                 st.error(f"API Error fetching {live_ticker}. Please ensure it is a valid Yahoo Finance ticker.")
+    # --- LBO DEBT WATERFALL & CASH SWEEP MODEL ---
+    st.markdown("---")
+    st.subheader("LBO Debt Waterfall & Cash Sweep (Institutional Model)")
+    st.markdown("Dynamically structure the capital stack for a Leveraged Buyout. The algorithm simulates a 5-year 'Cash Sweep', automatically using projected Free Cash Flow to aggressively pay down Senior and Mezzanine debt principal to maximize Sponsor IRR.")
+    
+    with st.expander("🏦 Open LBO Capital Structuring Engine"):
+        lbo_target = st.selectbox("Select Target for LBO Structuring:", filtered_df['Ticker'], key="lbo_struct_ticker")
+        
+        if lbo_target:
+            lbo_data = filtered_df[filtered_df['Ticker'] == lbo_target].iloc[0]
+            base_ev = lbo_data['Market_Cap'] * 1.2 # 20% acquisition premium
+            
+            st.write(f"#### Structuring Buyout for {lbo_target} (Purchase EV: ${base_ev/1e9:.2f}B)")
+            
+            lb_c1, lb_c2, lb_c3 = st.columns(3)
+            sponsor_eq_pct = lb_c1.slider("Sponsor Equity (%)", 10, 80, 40, 5) / 100
+            senior_debt_pct = lb_c2.slider("Senior Debt (Secured) (%)", 10, 80, 40, 5) / 100
+            
+            # Mezzanine is the remainder
+            mezz_debt_pct = 1.0 - sponsor_eq_pct - senior_debt_pct
+            if mezz_debt_pct < 0:
+                st.error("Capital stack exceeds 100%. Adjust sliders.")
+            elif mezz_debt_pct >= 0:
+                lb_c3.metric("Mezzanine Debt (Subordinated)", f"{mezz_debt_pct*100:.1f}%")
+                
+                senior_rate = 0.06
+                mezz_rate = 0.11
+                
+                sponsor_equity = base_ev * sponsor_eq_pct
+                senior_debt = base_ev * senior_debt_pct
+                mezz_debt = base_ev * mezz_debt_pct
+                
+                # Simulate 5-year Cash Sweep
+                # Assume starting FCF is 8% of EV, growing at 5%
+                fcf_ttm = base_ev * (lbo_data['FCF_Yield'] if lbo_data['FCF_Yield'] > 0 else 0.05)
+                
+                years = [0, 1, 2, 3, 4, 5]
+                senior_balances = [senior_debt]
+                mezz_balances = [mezz_debt]
+                fcfs = [0]
+                
+                for i in range(1, 6):
+                    projected_fcf = fcf_ttm * ((1 + 0.05) ** i)
+                    fcfs.append(projected_fcf)
+                    
+                    # Calculate Interest
+                    senior_interest = senior_balances[-1] * senior_rate
+                    mezz_interest = mezz_balances[-1] * mezz_rate
+                    
+                    # Cash available for principal paydown
+                    cash_available = projected_fcf - senior_interest - mezz_interest
+                    
+                    # Pay down senior first
+                    if cash_available > 0:
+                        senior_paydown = min(cash_available, senior_balances[-1])
+                        new_senior = senior_balances[-1] - senior_paydown
+                        cash_available -= senior_paydown
+                    else:
+                        new_senior = senior_balances[-1]
+                        
+                    # Then mezz
+                    if cash_available > 0:
+                        mezz_paydown = min(cash_available, mezz_balances[-1])
+                        new_mezz = mezz_balances[-1] - mezz_paydown
+                    else:
+                        new_mezz = mezz_balances[-1]
+                        
+                    senior_balances.append(max(0, new_senior))
+                    mezz_balances.append(max(0, new_mezz))
+                    
+                # Exit in Year 5
+                exit_multiple = lbo_data['EV/EBITDA']
+                # Rough ebitda proxy
+                implied_ebitda = base_ev / exit_multiple if exit_multiple > 0 else base_ev / 10
+                exit_ebitda = implied_ebitda * ((1 + 0.05) ** 5)
+                exit_ev = exit_ebitda * exit_multiple if exit_multiple > 0 else exit_ebitda * 10
+                
+                total_debt_remaining = senior_balances[-1] + mezz_balances[-1]
+                sponsor_exit_equity = exit_ev - total_debt_remaining
+                
+                # MoIC and IRR
+                moic = sponsor_exit_equity / sponsor_equity if sponsor_equity > 0 else 0
+                irr = (moic ** (1/5)) - 1 if moic > 0 else 0
+                
+                st.write("##### 5-Year Debt Waterfall Projection")
+                waterfall_df = pd.DataFrame({
+                    'Year': ['Year 0', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+                    'Senior Debt': senior_balances,
+                    'Mezzanine Debt': mezz_balances
+                })
+                
+                fig_wf = px.bar(
+                    waterfall_df, x='Year', y=['Senior Debt', 'Mezzanine Debt'],
+                    title=f"LBO Debt Principal Paydown (The Cash Sweep)",
+                    template="plotly_dark",
+                    barmode='stack',
+                    color_discrete_sequence=['#1f77b4', '#ff7f0e']
+                )
+                st.plotly_chart(fig_wf, use_container_width=True)
+                
+                res_c1, res_c2, res_c3 = st.columns(3)
+                res_c1.metric("Sponsor MOIC (Multiple on Invested Capital)", f"{moic:.2f}x")
+                res_c2.metric("Projected 5-Year IRR", f"{irr*100:.1f}%", delta="Target: >20%" if irr > 0.20 else "Underperforming")
+                res_c3.metric("Total Debt Paid Down", f"${(senior_debt + mezz_debt - total_debt_remaining)/1e9:.2f}B")
+
     # --- NLP SEC & NEWS SENTIMENT ANALYSIS ---
     st.markdown("---")
     st.subheader("Natural Language Processing (NLP) Risk Scanner")
