@@ -1,36 +1,44 @@
-# Quantitative M&A Sourcing Engine 🏛️
+# Evan Brook - Quantitative Portfolio
 
-![Python](https://img.shields.io/badge/Python-3.12-blue)
-![Machine Learning](https://img.shields.io/badge/Machine%20Learning-Random%20Forest-green)
-![Streamlit](https://img.shields.io/badge/UI-Streamlit-red)
-![Status](https://img.shields.io/badge/Status-Production%20V3.0-brightgreen)
+Welcome to my portfolio. I specialize in building institutional-grade Python architectures that automate corporate finance, venture capital, and private equity workflows.
 
-## Executive Summary
-This repository contains an institutional-grade Private Equity deal-sourcing architecture. The engine autonomously scrapes fundamental market data, calculates Discounted Cash Flow (DCF) intrinsic valuations, and utilizes a Machine Learning Random Forest Classifier to predict the probability of a Leveraged Buyout (LBO). 
-
-The output is visualized through a high-performance interactive web dashboard featuring a 10,000-scenario Monte Carlo risk simulation.
-
-## System Architecture
-
-### 1. Data Pipeline (`buyout_data_pipeline.py`)
-*   **API Integration:** Dynamically extracts fundamental metrics (EV, EBITDA, FCF, Debt) for 100+ mid-cap equities via the Yahoo Finance API.
-*   **Intrinsic Valuation Engine:** Algorithmically projects 5-year Free Cash Flow using a 9% WACC and 2.5% Terminal Growth rate to calculate the company's true intrinsic value and its current trading discount.
-
-### 2. Machine Learning Brain (`ma_ml_model.py`)
-*   **Algorithm:** `scikit-learn` Random Forest Classifier (100 estimators).
-*   **Heuristics:** Trains on historical PE capital structure profiles (High FCF Yield, Low Leverage, Valuation Discount).
-*   **Output:** Assigns a 0-100% predictive Acquisition Probability score to every equity in the universe.
-
-### 3. Executive Dashboard (`ma_dashboard.py`)
-*   **Decoupled UI:** Built on Streamlit and Plotly for instant, zero-latency rendering of large institutional datasets.
-*   **Monte Carlo Risk Simulator:** Allows users to select any target and instantly run 10,000 randomized market scenarios to calculate the exact probability of capital loss upon exit.
-
-## How to Run Locally
-1. Clone this repository.
-2. Install dependencies: `pip install scikit-learn streamlit plotly yfinance pandas numpy`
-3. Generate the data: `python buyout_data_pipeline.py`
-4. Train the AI: `python ma_ml_model.py`
-5. Launch the Dashboard: `streamlit run ma_dashboard.py`
+Below are the quantitative models I have engineered.
 
 ---
-*Developed by Evan Brook | Target Market: Pacific Northwest Private Equity & Venture Capital*
+
+## Project 1: Quantitative M&A Sourcing Model (Private Equity)
+
+An autonomous Machine Learning pipeline that identifies undervalued mid-cap equities for Leveraged Buyout (LBO) targets.
+
+*   **Valuation Math:** Algorithmically projects 5-year Free Cash Flow (9% WACC) to calculate the Discount to Intrinsic Value.
+*   **Machine Learning:** Uses a Random Forest Classifier to assign an Acquisition Probability score to the target.
+*   **Risk Engine:** Integrates a live 10,000-scenario Monte Carlo simulation to stress-test exit multiples.
+*   **[Read the Methodology Whitepaper here](Quantitative_MA_Whitepaper.md)**
+
+[View the Live Interactive Dashboard](#)
+
+---
+
+## Project 2: Venture Capital Unit Economics Model (VC / Tech Strategy)
+
+An Unsupervised Machine Learning architecture designed to autonomously evaluate early-stage SaaS startup unit economics and predict capital efficiency.
+
+*   **Clustering Algorithm:** Deploys scikit-learn K-Means clustering to autonomously group 2,000 synthetic startups into distinct capital risk tranches.
+*   **Unit Economics:** Mathematically evaluates the Rule of 40 and LTV:CAC ratios to determine operational efficiency.
+*   **Capitalization Math:** Features a dynamic Series A Capital Raise Calculator that mathematically determines the required equity injection to secure 24 months of operational runway.
+*   **[Read the Methodology Whitepaper here](VC_Engine_Whitepaper.md)**
+
+[View the Live Interactive Dashboard](#)
+
+---
+
+## Project 3: Sovereign Wealth Portfolio Optimizer (Family Office)
+
+An algorithmic asset allocation model designed to manage nine-figure trust funds using Modern Portfolio Theory (MPT).
+
+*   **Financial Math:** Connects to the Yahoo Finance API to calculate 5-year historical covariance matrices across Equities, Treasuries, Gold, and Real Estate.
+*   **Monte Carlo Simulation:** Executes 10,000 randomized simulations to map the Markowitz Efficient Frontier and identify the mathematical peak of the Sharpe Ratio.
+*   **Risk Management:** Features a Tail-Risk Stress Test module that subjects the optimal portfolio to historic crashes (e.g., 2008 Financial Crisis, 2020 COVID Crash) to calculate Maximum Drawdown.
+*   **[Read the Methodology Whitepaper here](Family_Office_Whitepaper.md)**
+
+[View the Live Interactive Dashboard](#)
