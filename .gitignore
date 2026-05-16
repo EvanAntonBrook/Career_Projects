@@ -1,0 +1,14 @@
+# Sensitive Personal Info
+Evan_Brook_Resume.html
+GOLDMAN_REPLY.txt
+Evan_Brook_Updated_Resume.md
+*.pdf
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+venv/
+ENV/
+.streamlit/
