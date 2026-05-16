@@ -21,20 +21,20 @@ def run_vc_clustering():
     df['Cluster_ID'] = kmeans.fit_predict(X_scaled)
     
     # Dynamically label the clusters based on their characteristics
-    # We find the cluster with the highest LTV:CAC and call it Unicorns
+    # We find the cluster with the highest LTV:CAC and call it High-Conviction Assets
     cluster_means = df.groupby('Cluster_ID')['LTV_CAC_Ratio'].mean()
-    unicorn_cluster = cluster_means.idxmax()
+    high_conviction_cluster = cluster_means.idxmax()
     
     # We find the cluster with the lowest runway and call it Cash Burners
     runway_means = df.groupby('Cluster_ID')['Runway_Months'].mean()
     burner_cluster = runway_means.idxmin()
     
     # The remaining cluster is Zombies
-    zombie_cluster = [c for c in [0, 1, 2] if c not in [unicorn_cluster, burner_cluster]][0]
+    zombie_cluster = [c for c in [0, 1, 2] if c not in [high_conviction_cluster, burner_cluster]][0]
     
     # Apply labels
     label_map = {
-        unicorn_cluster: 'Tier 1: High Conviction',
+        high_conviction_cluster: 'Tier 1: High Conviction',
         burner_cluster: 'Tier 2: Capital Intensive',
         zombie_cluster: 'Tier 3: Growth Stagnation'
     }

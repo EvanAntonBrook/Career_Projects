@@ -13,7 +13,7 @@ The engine evaluates 2,000 synthetic startups based on strict institutional metr
 
 ### 2. K-Means Clustering AI
 Rather than using hardcoded thresholds, the engine deploys a `scikit-learn` K-Means clustering algorithm. The AI analyzes the multi-dimensional dataset and autonomously organizes the 2,000 startups into three distinct risk profiles:
-1.  **Unicorn Trajectory:** Startups exhibiting highly efficient growth (Rule of 40 achieved, >3x LTV:CAC, sustainable runway).
+1.  **High-Conviction Trajectory:** Startups exhibiting highly efficient growth (Rule of 40 achieved, >3x LTV:CAC, sustainable runway).
 2.  **Cash Burners:** Startups with high top-line growth but unsustainable monthly cash burn, representing high-risk equity dilution targets.
 3.  **Zombie Startups:** Low-growth, low-efficiency businesses slowly burning through capital without scaling.
 

@@ -27,8 +27,8 @@ else:
     st.subheader("Startup Universe Overview")
     col1, col2, col3 = st.columns(3)
     col1.metric("Total Startups Scanned", f"{len(df):,}")
-    unicorns = len(df[df['AI_Classification'] == 'Tier 1: High Conviction'])
-    col2.metric("Tier 1 Targets Found", f"{unicorns:,}")
+    high_conviction_targets = len(df[df['AI_Classification'] == 'Tier 1: High Conviction'])
+    col2.metric("Tier 1 Targets Found", f"{high_conviction_targets:,}")
     zombies = len(df[df['AI_Classification'] == 'Tier 3: Growth Stagnation'])
     col3.metric("Tier 3 Assets Avoided", f"{zombies:,}")
     
