@@ -54,3 +54,27 @@ A fully linked, institutional-grade financial model that captures the real-time 
 *   **Sensitivity Analysis:** Includes a professional Sensitivity Matrix to stress-test bull and bear scenarios for Year 5 Net Income.
 
 [View the Codebase](three_statement_model.py)
+
+---
+
+## Project 5: Titan LBO Deal Sourcing Engine (Private Equity)
+
+An algorithmic stock screener designed to scan public markets for high-probability Leveraged Buyout (LBO) targets.
+
+*   **Financial Scraping:** Rips live EV/EBITDA and Free Cash Flow data for mid-cap targets.
+*   **Modeling Logic:** Automatically calculates a theoretical 5-year IRR based on a 4.0x EBITDA debt-incurrence and a 50% FCF debt-paydown schedule.
+*   **Ranking:** Outputs a prioritized list of targets (MoM and IRR) for Private Equity sourcing workflows.
+
+[View the Codebase](titan_lbo_screener.py)
+
+---
+
+## Project 6: Japanese Carry Trade Engine (Global Yield Arbitrage)
+
+A Macro-Quantitative model that simulates institutional "Covered Interest Arbitrage" between the JPY and USD markets.
+
+*   **Macro Mechanics:** Analyzes the interest rate differential (Carry) between the Bank of Japan (BoJ) and the Federal Reserve.
+*   **Currency Hedging:** Factors in the Forward Premium/Discount of the JPY/USD currency pair to calculate the risk-adjusted arbitrage profit.
+*   **Institutional Simulation:** Projects Alpha for nine-figure capital deployments across global yield curves.
+
+[View the Codebase](japanese_arbitrage_engine.py)
